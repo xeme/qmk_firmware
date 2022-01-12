@@ -25,7 +25,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 bool get_tapping_force_hold(uint16_t keycode, keyrecord_t *record) {
   switch (keycode) {
-    case LSFT_T(KC_SPC):
+    case LSFT_T(KC_BSPC):
       return true;
     default:
       return false;
@@ -47,6 +47,11 @@ const key_override_t page_down_second_layer = ko_make_with_layers(
   KC_B,
   KC_PGDN,
   2);
+
+const key_override_t word_backspace = ko_make_basic(
+  MOD_MASK_CTRL,
+  LSFT_T(KC_BSPC),
+  LALT(KC_BSPC));
 
 /*
 const key_override_t next_app_override = ko_make_basic(
@@ -74,6 +79,7 @@ const key_override_t **key_overrides = (const key_override_t *[]){
     &copy_on_second_layer,
     &page_up_second_layer,
     &page_down_second_layer,
+    &word_backspace,
     // &next_app_override,
     // &previous_app_override,
     // These won't work for now because they have conflicting modifiers. This
