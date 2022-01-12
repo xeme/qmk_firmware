@@ -17,7 +17,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 	[1] = LAYOUT(
     KC_NO, KC_1,    KC_2,    KC_3,    KC_4,     KC_5,                                KC_6,    KC_7,    KC_8,    KC_9,    KC_0,    KC_NO,
     KC_NO, KC_TRNS, KC_LEFT, KC_UP,   KC_RIGHT, KC_GRV,                              KC_BSLS, KC_MINS, KC_EQL,  KC_SCLN, KC_QUOT, KC_NO,
-    KC_NO, KC_TRNS, KC_TRNS, KC_DOWN, KC_TRNS,  KC_TRNS, KC_NO, KC_NO, KC_NO, KC_NO, KC_LBRC, KC_RBRC, KC_COMM, KC_DOT,  KC_SLSH, KC_NO,
+    KC_NO, KC_TRNS, KC_TRNS, KC_DOWN, KC_TRNS,  KC_B, KC_NO, KC_NO,    KC_NO, KC_NO, KC_LBRC, KC_RBRC, KC_COMM, KC_DOT,  KC_SLSH, KC_NO,
 
     KC_NO, KC_TRNS, KC_TRNS, KC_TRNS, KC_NO, KC_NO, KC_TRNS, KC_TRNS, KC_TRNS, KC_NO)
 };
@@ -37,6 +37,18 @@ const key_override_t copy_on_second_layer = ko_make_basic(
   KC_DOWN,
   LGUI(KC_C));
 
+const key_override_t page_up_second_layer = ko_make_basic(
+  MOD_MASK_GUI,
+  KC_GRV,
+  KC_PGUP);
+
+const key_override_t page_down_second_layer = ko_make_with_layers(
+  MOD_MASK_GUI,
+  KC_B,
+  KC_PGDN,
+  2);
+
+/*
 const key_override_t next_app_override = ko_make_basic(
   MOD_MASK_CTRL,
   KC_DOWN,
@@ -56,12 +68,14 @@ const key_override_t previous_window_override = ko_make_basic(
   MOD_MASK_CS,
   KC_UP,
   LGUI(KC_TAB));
-
+*/
 // This globally defines all key overrides to be used
 const key_override_t **key_overrides = (const key_override_t *[]){
     &copy_on_second_layer,
-    &next_app_override,
-    &previous_app_override,
+    &page_up_second_layer,
+    &page_down_second_layer,
+    // &next_app_override,
+    // &previous_app_override,
     // These won't work for now because they have conflicting modifiers. This
     // maybe possible to be fixed with ko_make_with_layers_and_negmods.
     // Also we need to somehow recreate the behaviour when cmd is held and app
