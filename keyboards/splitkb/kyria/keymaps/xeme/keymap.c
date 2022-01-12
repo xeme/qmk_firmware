@@ -7,8 +7,19 @@
  */
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
-	[0] = LAYOUT(KC_NO, KC_Q, KC_W, KC_E, KC_R, KC_T, KC_Y, KC_U, KC_I, KC_O, KC_P, KC_NO, KC_NO, KC_A, KC_S, KC_D, KC_F, KC_G, KC_H, KC_J, KC_K, KC_L, KC_QUOT, KC_NO, KC_NO, KC_Z, KC_X, KC_C, KC_V, KC_B, KC_NO, KC_NO, KC_NO, KC_NO, KC_N, KC_M, KC_COMM, KC_DOT, KC_SLSH, KC_NO, KC_NO, LCTL_T(KC_TAB), LGUI_T(KC_ESC), TG(1), KC_NO, KC_NO, LALT_T(KC_ENT), KC_SPC, LSFT_T(KC_BSPC), KC_NO),
-	[1] = LAYOUT(KC_NO, KC_1, KC_2, KC_3, KC_4, KC_5, KC_6, KC_7, KC_8, KC_9, KC_0, KC_NO, KC_NO, KC_TAB, KC_LEFT, KC_UP, KC_RIGHT, KC_PGUP, KC_BSLS, KC_MINS, KC_EQL, KC_SCLN, KC_QUOT, KC_NO, KC_NO, KC_GRV, KC_TRNS, KC_DOWN, KC_TRNS, KC_PGDN, KC_NO, KC_NO, KC_NO, KC_NO, KC_LBRC, KC_RBRC, KC_COMM, KC_DOT, KC_SLSH, KC_NO, KC_NO, KC_TRNS, KC_TRNS, KC_TRNS, KC_NO, KC_NO, KC_TRNS, KC_TRNS, KC_TRNS, KC_NO)
+	[0] = LAYOUT(
+    KC_NO, KC_Q, KC_W, KC_E, KC_R, KC_T,                              KC_Y, KC_U, KC_I,    KC_O,   KC_P,    KC_NO,
+    KC_NO, KC_A, KC_S, KC_D, KC_F, KC_G,                              KC_H, KC_J, KC_K,    KC_L,   KC_QUOT, KC_NO,
+    KC_NO, KC_Z, KC_X, KC_C, KC_V, KC_B, KC_NO, KC_NO,  KC_NO, KC_NO, KC_N, KC_M, KC_COMM, KC_DOT, KC_SLSH, KC_NO, KC_NO,
+
+    LCTL_T(KC_TAB), LGUI_T(KC_ESC), TG(1), KC_NO, KC_NO, LALT_T(KC_ENT), KC_SPC, LSFT_T(KC_BSPC), KC_NO),
+
+	[1] = LAYOUT(
+    KC_NO, KC_1,    KC_2,    KC_3,    KC_4,     KC_5,                                KC_6,    KC_7,    KC_8,    KC_9,    KC_0,    KC_NO,
+    KC_NO, KC_TRNS, KC_LEFT, KC_UP,   KC_RIGHT, KC_GRV,                              KC_BSLS, KC_MINS, KC_EQL,  KC_SCLN, KC_QUOT, KC_NO,
+    KC_NO, KC_TRNS, KC_TRNS, KC_DOWN, KC_TRNS,  KC_TRNS, KC_NO, KC_NO, KC_NO, KC_NO, KC_LBRC, KC_RBRC, KC_COMM, KC_DOT,  KC_SLSH, KC_NO,
+
+    KC_NO, KC_TRNS, KC_TRNS, KC_TRNS, KC_NO, KC_NO, KC_TRNS, KC_TRNS, KC_TRNS, KC_NO)
 };
 
 
@@ -21,6 +32,10 @@ bool get_tapping_force_hold(uint16_t keycode, keyrecord_t *record) {
   }
 }
 
+const key_override_t copy_on_second_layer = ko_make_basic(
+  MOD_MASK_GUI,
+  KC_DOWN,
+  LGUI(KC_C));
 
 const key_override_t next_app_override = ko_make_basic(
   MOD_MASK_CTRL,
@@ -44,6 +59,7 @@ const key_override_t previous_window_override = ko_make_basic(
 
 // This globally defines all key overrides to be used
 const key_override_t **key_overrides = (const key_override_t *[]){
+    &copy_on_second_layer,
     &next_app_override,
     &previous_app_override,
     // These won't work for now because they have conflicting modifiers. This
