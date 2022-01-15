@@ -1,5 +1,6 @@
 #include QMK_KEYBOARD_H
 
+
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 	[0] = LAYOUT(
     KC_NO, KC_Q, KC_W, KC_E, KC_R, KC_T,                              KC_Y, KC_U, KC_I,    KC_O,   KC_P,    KC_NO,
@@ -138,8 +139,85 @@ const key_override_t media_next = ko_make_basic(
 const key_override_t media_previous = ko_make_basic(
   MOD_MASK_ALT, KC_5, KC_MEDIA_PREV_TRACK);
 
-// IDEA: ALT 1-4 could be RGB control for selecting Hue, Saturation and Value
-// of the normal backlight, then layer will be a boost to Saturation or Value.
+
+
+
+
+#define ko_make_basic_with_callback(trigger_mods_, trigger_key, negative_mods, layer, callback) \
+    ((const key_override_t){                                                     \
+        .trigger_mods                           = (trigger_mods_),               \
+        .layers                                 = (layer),                       \
+        .suppressed_mods                        = (trigger_mods_),               \
+        .options                                = 0,                             \
+        .negative_mod_mask                      = (negative_mods),                             \
+        .custom_action                          = (callback),                    \
+        .context                                = NULL,                          \
+        .trigger                                = (trigger_key),                 \
+        .replacement                            = KC_NO,                         \
+        .enabled                                = NULL                           \
+    })
+
+bool handle_rgb_hue_increase(bool activated, void *context) {
+  if (activated) { rgblight_increase_hue(); }
+  return false;
+}
+bool handle_rgb_hue_decrease(bool activated, void *context) {
+  if (activated) { rgblight_decrease_hue(); }
+  return false;
+}
+bool handle_rgb_sat_increase(bool activated, void *context) {
+  if (activated) { rgblight_increase_sat(); }
+  return false;
+}
+bool handle_rgb_sat_decrease(bool activated, void *context) {
+  if (activated) { rgblight_decrease_sat(); }
+  return false;
+}
+bool handle_rgb_val_increase(bool activated, void *context) {
+  if (activated) { rgblight_increase_val(); }
+  return false;
+}
+bool handle_rgb_val_decrease(bool activated, void *context) {
+  if (activated) { rgblight_decrease_val(); }
+  return false;
+}
+
+typedef union {
+  uint32_t raw;
+  struct {
+    bool     rgb_layer_mode :1;
+  };
+} user_config_t;
+
+user_config_t user_config;
+bool handle_rgb_layer_mode(bool activated, void *context) {
+  if (activated) {
+    user_config.rgb_layer_mode = !user_config.rgb_layer_mode;
+    eeconfig_update_user(user_config.raw);
+  }
+  return false;
+}
+void eeconfig_init_user(void) {  // EEPROM is getting reset!
+  user_config.raw = 0;
+  user_config.rgb_layer_mode = true;
+  eeconfig_update_user(user_config.raw);
+}
+
+// RGB Control.
+const key_override_t rgb_hue_increase = ko_make_basic_with_callback(
+  MOD_MASK_ALT, KC_Q, MOD_MASK_SHIFT, 1, handle_rgb_hue_increase);
+const key_override_t rgb_hue_decrease = ko_make_basic_with_callback(
+  MOD_MASK_SA, KC_Q, 0, 1, handle_rgb_hue_decrease);
+const key_override_t rgb_sat_increase = ko_make_basic_with_callback(
+  MOD_MASK_ALT, KC_W, MOD_MASK_SHIFT, 1, handle_rgb_sat_increase);
+const key_override_t rgb_sat_decrease = ko_make_basic_with_callback(
+  MOD_MASK_SA, KC_W, 0, 1, handle_rgb_sat_decrease);
+const key_override_t rgb_val_increase = ko_make_basic_with_callback(
+  MOD_MASK_ALT, KC_R, MOD_MASK_SHIFT, 1, handle_rgb_val_increase);
+const key_override_t rgb_val_decrease = ko_make_basic_with_callback(
+  MOD_MASK_SA, KC_R, 0, 1, handle_rgb_val_decrease);
+const key_override_t rgb_layer_mode = ko_make_basic_with_callback(
+  MOD_MASK_ALT, KC_T, 0, 1, handle_rgb_layer_mode);
 
 // This globally defines all key overrides to be used
 const key_override_t **key_overrides = (const key_override_t *[]){
@@ -169,23 +247,43 @@ const key_override_t **key_overrides = (const key_override_t *[]){
     &volume_pause,
     &media_next,
     &media_previous,
+    &rgb_hue_increase,
+    &rgb_hue_decrease,
+    &rgb_sat_increase,
+    &rgb_sat_decrease,
+    &rgb_val_increase,
+    &rgb_val_decrease,
+    &rgb_layer_mode,
     NULL // Null terminate the array of overrides!
 };
 
-void default_led(void) {
-  // Default hue saturation and value.
-  rgblight_sethsv(80, 255, 100);
+
+int last_hue, last_sat, last_val, previous_layer = 1;
+
+void save_current_rgb(void) {
+  last_hue = rgblight_get_hue();
+  last_sat = rgblight_get_sat();
+  last_val = rgblight_get_val();
 }
 
 void keyboard_post_init_user(void) {
-   default_led();
+   user_config.raw = eeconfig_read_user();
 }
 
 layer_state_t layer_state_set_user(layer_state_t state) {
     if (layer_state_cmp(state, 1)) {
-      rgblight_sethsv(80, 255, 255);
+      if (previous_layer == 0) {
+        save_current_rgb();
+        previous_layer = 1;
+      }
+      if (user_config.rgb_layer_mode) {
+        rgblight_sethsv(last_hue, last_sat, 255);
+      } else {
+        rgblight_sethsv(last_hue, 255, last_val);
+      }
     } else {
-      default_led();
+      previous_layer = 0;
+      rgblight_sethsv(last_hue, last_sat, last_val);
     }
     return state;
 }

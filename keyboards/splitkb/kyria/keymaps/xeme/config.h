@@ -9,4 +9,4 @@
 // Used by TT to toggle layers on signle tap.
 #define TAPPING_TOGGLE 1
 
-#define RGBLIGHT_LAYERS
+//#define RGBLIGHT_LAYERS
