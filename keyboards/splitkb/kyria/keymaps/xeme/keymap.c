@@ -107,7 +107,7 @@ const key_override_t disable_cmd_d = ko_make_with_layers(
 // CMD UP is anoying because CMD DOWN is copy, so leaving this as a second
 // PAGE UP means there is no intuitive way to revert it.
 const key_override_t disable_cmd_up = ko_make_with_layers(
-  MOD_MASK_GUI, KC_DOWN, KC_NO, 2);
+  MOD_MASK_GUI, KC_UP, KC_NO, 2);
 
 // Disable regular alphas on second layer as these are not intended to be used
 // other than in the explicit combos. They are close to arrows and navigation
@@ -139,10 +139,7 @@ const key_override_t media_next = ko_make_basic(
 const key_override_t media_previous = ko_make_basic(
   MOD_MASK_ALT, KC_5, KC_MEDIA_PREV_TRACK);
 
-
-
-
-
+// RGB control is quite complex because overrides work only with callbacks.
 #define ko_make_basic_with_callback(trigger_mods_, trigger_key, negative_mods, layer, callback) \
     ((const key_override_t){                                                     \
         .trigger_mods                           = (trigger_mods_),               \
@@ -182,6 +179,7 @@ bool handle_rgb_val_decrease(bool activated, void *context) {
   return false;
 }
 
+// For storing the value vs saturation mode in EPROM.
 typedef union {
   uint32_t raw;
   struct {
@@ -203,7 +201,8 @@ void eeconfig_init_user(void) {  // EEPROM is getting reset!
   eeconfig_update_user(user_config.raw);
 }
 
-// RGB Control.
+// RGB Control. We have to use the first layer because we need to control
+// the colors *before* second layer boost is activated.
 const key_override_t rgb_hue_increase = ko_make_basic_with_callback(
   MOD_MASK_ALT, KC_Q, MOD_MASK_SHIFT, 1, handle_rgb_hue_increase);
 const key_override_t rgb_hue_decrease = ko_make_basic_with_callback(
@@ -235,6 +234,8 @@ const key_override_t **key_overrides = (const key_override_t *[]){
     &cmd_grove_second_layer,
     &ctrl_tab_first_layer,
     &ctrl_tab_second_layer,
+    &disable_cmd_d,
+    &disable_cmd_up,
     &disable_a_second_layer,
     &disable_z_second_layer,
     &disable_x_second_layer,
@@ -266,6 +267,7 @@ void save_current_rgb(void) {
   last_val = rgblight_get_val();
 }
 
+// This is called on keyboard bootstrap.
 void keyboard_post_init_user(void) {
    user_config.raw = eeconfig_read_user();
 }
