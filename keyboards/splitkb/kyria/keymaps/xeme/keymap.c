@@ -114,8 +114,6 @@ const key_override_t disable_cmd_up = ko_make_with_layers(
 // and it's anoying when random letters are send on navigation typo.
 const key_override_t disable_a_second_layer = ko_make_with_layers_and_negmods(
   0, KC_A, KC_NO, 2, MOD_MASK_GUI);
-const key_override_t disable_x_second_layer = ko_make_with_layers_and_negmods(
-  0, KC_X, KC_NO, 2, MOD_MASK_GUI);
 const key_override_t disable_c_second_layer = ko_make_with_layers_and_negmods(
   0, KC_C, KC_NO, 2, MOD_MASK_GUI);
 const key_override_t disable_v_second_layer = ko_make_with_layers_and_negmods(
@@ -123,10 +121,12 @@ const key_override_t disable_v_second_layer = ko_make_with_layers_and_negmods(
 const key_override_t disable_b_second_layer = ko_make_with_layers_and_negmods(
   0, KC_B, KC_NO, 2, MOD_MASK_GUI);
 
-// Since we don't want z on the second anyway, let's have second backspace for
-// cases when right hand is using mouse.
+// Since we don't want z and x on the second anyway, let's have second backspace
+// for cases when right hand is using mouse.
 const key_override_t backspace_second_layer = ko_make_with_layers_and_negmods(
   0, KC_Z, KC_BSPC, 2, MOD_MASK_GUI);
+const key_override_t space_second_layer = ko_make_with_layers_and_negmods(
+  0, KC_X, KC_SPC, 2, MOD_MASK_GUI);
 
 // Media control.
 const key_override_t volume_up = ko_make_basic(
@@ -149,7 +149,7 @@ const key_override_t media_previous = ko_make_basic(
         .layers                                 = (layer),                       \
         .suppressed_mods                        = (trigger_mods_),               \
         .options                                = 0,                             \
-        .negative_mod_mask                      = (negative_mods),                             \
+        .negative_mod_mask                      = (negative_mods),               \
         .custom_action                          = (callback),                    \
         .context                                = NULL,                          \
         .trigger                                = (trigger_key),                 \
@@ -246,11 +246,11 @@ const key_override_t **key_overrides = (const key_override_t *[]){
     &disable_cmd_d,
     &disable_cmd_up,
     &disable_a_second_layer,
-    &disable_x_second_layer,
     &disable_c_second_layer,
     &disable_v_second_layer,
     &disable_b_second_layer,
     &backspace_second_layer,
+    &space_second_layer,
     &volume_up,
     &volume_down,
     &volume_mute,
