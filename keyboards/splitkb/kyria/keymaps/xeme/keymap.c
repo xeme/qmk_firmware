@@ -124,6 +124,23 @@ const key_override_t disable_v_second_layer = ko_make_with_layers_and_negmods(
 const key_override_t disable_b_second_layer = ko_make_with_layers_and_negmods(
   0, KC_B, KC_NO, 2, MOD_MASK_GUI);
 
+// Media control.
+const key_override_t volume_up = ko_make_basic(
+  MOD_MASK_ALT, KC_0, KC_AUDIO_VOL_UP);
+const key_override_t volume_down = ko_make_basic(
+  MOD_MASK_ALT, KC_9, KC_AUDIO_VOL_DOWN);
+const key_override_t volume_mute = ko_make_basic(
+  MOD_MASK_ALT, KC_8, KC_AUDIO_MUTE);
+const key_override_t volume_pause = ko_make_basic(
+  MOD_MASK_ALT, KC_7, KC_MEDIA_PLAY_PAUSE);
+const key_override_t media_next = ko_make_basic(
+  MOD_MASK_ALT, KC_6, KC_MEDIA_NEXT_TRACK);
+const key_override_t media_previous = ko_make_basic(
+  MOD_MASK_ALT, KC_5, KC_MEDIA_PREV_TRACK);
+
+// IDEA: ALT 1-4 could be RGB control for selecting Hue, Saturation and Value
+// of the normal backlight, then layer will be a boost to Saturation or Value.
+
 // This globally defines all key overrides to be used
 const key_override_t **key_overrides = (const key_override_t *[]){
     &copy_on_second_layer,
@@ -146,6 +163,12 @@ const key_override_t **key_overrides = (const key_override_t *[]){
     &disable_c_second_layer,
     &disable_v_second_layer,
     &disable_b_second_layer,
+    &volume_up,
+    &volume_down,
+    &volume_mute,
+    &volume_pause,
+    &media_next,
+    &media_previous,
     NULL // Null terminate the array of overrides!
 };
 
