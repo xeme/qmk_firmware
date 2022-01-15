@@ -187,6 +187,9 @@ typedef union {
   uint32_t raw;
   struct {
     bool     rgb_layer_mode :1;
+    uint8_t  hue :8;
+    uint8_t  sat :8;
+    uint8_t  val :8;
   };
 } user_config_t;
 
@@ -201,6 +204,9 @@ bool handle_rgb_layer_mode(bool activated, void *context) {
 void eeconfig_init_user(void) {  // EEPROM is getting reset!
   user_config.raw = 0;
   user_config.rgb_layer_mode = true;
+  user_config.hue = 85;
+  user_config.sat = 150;
+  user_config.val = 150;
   eeconfig_update_user(user_config.raw);
 }
 
@@ -262,19 +268,20 @@ const key_override_t **key_overrides = (const key_override_t *[]){
 };
 
 
-int last_hue, last_sat, last_val, previous_layer = 1;
-
 void save_current_rgb(void) {
-  last_hue = rgblight_get_hue();
-  last_sat = rgblight_get_sat();
-  last_val = rgblight_get_val();
+  user_config.hue = rgblight_get_hue();
+  user_config.sat = rgblight_get_sat();
+  user_config.val = rgblight_get_val();
+  eeconfig_update_user(user_config.raw);
 }
 
 // This is called on keyboard bootstrap.
 void keyboard_post_init_user(void) {
    user_config.raw = eeconfig_read_user();
+   rgblight_sethsv(user_config.hue, user_config.sat, user_config.val);
 }
 
+bool previous_layer = 0;
 layer_state_t layer_state_set_user(layer_state_t state) {
     if (layer_state_cmp(state, 1)) {
       if (previous_layer == 0) {
@@ -282,13 +289,13 @@ layer_state_t layer_state_set_user(layer_state_t state) {
         previous_layer = 1;
       }
       if (user_config.rgb_layer_mode) {
-        rgblight_sethsv(last_hue, last_sat, 255);
+        rgblight_sethsv(user_config.hue, user_config.sat, 255);
       } else {
-        rgblight_sethsv(last_hue, 255, last_val);
+        rgblight_sethsv(user_config.hue, 255, user_config.val);
       }
     } else {
       previous_layer = 0;
-      rgblight_sethsv(last_hue, last_sat, last_val);
+      rgblight_sethsv(user_config.hue, user_config.sat, user_config.val);
     }
     return state;
 }
